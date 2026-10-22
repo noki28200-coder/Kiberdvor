@@ -1,0 +1,278 @@
+@import '@kiberdvor/ui/styles.css';
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--kd-accent);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--kd-surface);
+  border-bottom: 1px solid var(--kd-border);
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-decoration: none;
+  color: var(--kd-text);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nav a {
+  text-decoration: none;
+  color: var(--kd-muted);
+}
+
+.nav a.active {
+  color: var(--kd-text);
+  font-weight: 600;
+}
+
+.banner {
+  background: color-mix(in srgb, var(--kd-warning) 15%, var(--kd-surface));
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--kd-border);
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.footer {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px;
+  border-top: 1px solid var(--kd-border);
+  font-size: 0.85rem;
+}
+
+.muted {
+  color: var(--kd-muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.error {
+  color: var(--kd-danger);
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 520px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form label.checkbox {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  padding: 8px;
+  border: 1px solid var(--kd-border);
+  border-radius: 8px;
+  background: var(--kd-surface);
+  color: var(--kd-text);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--kd-border);
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--kd-border);
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.player {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--kd-border);
+}
+
+.player__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.player__name {
+  font-weight: 600;
+}
+
+.player__details {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.player__details a {
+  margin-right: 8px;
+}
+
+.pitch {
+  font-style: italic;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.bracket {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.bracket__column {
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bracket__match {
+  display: block;
+  border: 1px solid var(--kd-border);
+  border-radius: 8px;
+  background: var(--kd-surface);
+  text-decoration: none;
+  color: var(--kd-text);
+}
+
+.bracket__team {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+}
+
+.bracket__team + .bracket__team {
+  border-top: 1px solid var(--kd-border);
+}
+
+.bracket__team.winner {
+  font-weight: 700;
+}
+
+.draft-timer {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.toasts {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(360px, calc(100vw - 32px));
+  z-index: 10;
+}
+
+.toast {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--kd-surface);
+  border: 1px solid var(--kd-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 15%);
+}
+
+.toast__close {
+  border: none;
+  background: none;
+  color: var(--kd-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.legal {
+  max-width: 760px;
+  line-height: 1.6;
+}
+
+.stub-note {
+  border: 1px dashed var(--kd-warning);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--kd-warning);
+}

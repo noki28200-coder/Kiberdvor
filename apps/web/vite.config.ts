@@ -5,6 +5,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    proxy: { '/api': 'http://localhost:3100' },
+    proxy: {
+      '/api': 'http://localhost:3100',
+      '/socket.io': { target: 'http://localhost:3100', ws: true },
+    },
   },
 });

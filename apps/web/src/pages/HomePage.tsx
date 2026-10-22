@@ -1,31 +1,62 @@
-import { GAME_INFO, GAMES, healthResponseSchema } from '@kiberdvor/shared';
+import {
+  FORMAT_LABELS,
+  TOURNAMENT_STATUS_LABELS,
+  type TournamentListItem,
+} from '@kiberdvor/shared';
+import { Badge, Button, Card } from '@kiberdvor/ui';
 import { useQuery } from '@tanstack/react-query';
-import { apiGet } from '../api';
-
-function ApiStatus() {
-  const health = useQuery({
-    queryKey: ['health'],
-    queryFn: () => apiGet('/health', healthResponseSchema),
-  });
-
-  if (health.isPending) return <p>Проверяем сервер…</p>;
-  if (health.isError) return <p>Сервер недоступен: {health.error.message}</p>;
-  return (
-    <p>Сервер работает, база данных: {health.data.db === 'ok' ? 'подключена' : 'недоступна'}</p>
-  );
-}
+import { Link, useNavigate } from 'react-router';
+import { api, useMe } from '../api';
+import { ErrorText, formatDate, gameTitle, Loading } from '../components/common';
 
 export function HomePage() {
+  const { data: me } = useMe();
+  const navigate = useNavigate();
+  const list = useQuery({
+    queryKey: ['tournaments'],
+    queryFn: () => api.get<TournamentListItem[]>('/tournaments'),
+  });
+
   return (
-    <main style={{ maxWidth: 720, margin: '0 auto', padding: 16, fontFamily: 'system-ui' }}>
-      <h1>Любительские киберспорт-турниры</h1>
-      <p>Организатор запускает турнир за 5 минут, одиночки находят команду через драфт.</p>
-      <ul>
-        {GAMES.map((game) => (
-          <li key={game}>{GAME_INFO[game].title}</li>
+    <>
+      <div className="row" style={{ justifyContent: 'space-between' }}>
+        <div>
+          <h1>Любительские турниры</h1>
+          <p className="muted">
+            Dota 2, CS2 и FPV Kamikaze Drone. Нет команды — заявитесь свободным агентом, капитаны
+            выберут вас в драфте.
+          </p>
+        </div>
+        {me && <Button onClick={() => void navigate('/tournaments/new')}>Создать турнир</Button>}
+      </div>
+
+      <Card>
+        {list.isPending && <Loading />}
+        <ErrorText error={list.error} />
+        {list.data?.length === 0 && <p className="muted">Турниров пока нет.</p>}
+        {list.data?.map((t) => (
+          <div key={t.id} className="list-item">
+            <div>
+              <Link to={`/tournaments/${t.id}`}>
+                <strong>{t.title}</strong>
+              </Link>
+              <div className="muted small">
+                {gameTitle(t.game)} · {FORMAT_LABELS[t.format]} · старт {formatDate(t.startsAt)} ·
+                организатор {t.organizerNickname}
+              </div>
+            </div>
+            <div className="row">
+              <Badge>
+                команд {t.teamCount}/{t.teamLimit}
+              </Badge>
+              <Badge>свободных агентов {t.freeAgentCount}</Badge>
+              <Badge tone={t.status === 'registration_open' ? 'success' : 'neutral'}>
+                {TOURNAMENT_STATUS_LABELS[t.status]}
+              </Badge>
+            </div>
+          </div>
         ))}
-      </ul>
-      <ApiStatus />
-    </main>
+      </Card>
+    </>
   );
 }
