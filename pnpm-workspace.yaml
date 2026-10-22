@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  # packages/private — приватный сабмодуль: попадает в workspace, только если он скачан.
+  - packages/*
+
+allowBuilds:
+  esbuild: true
+  electron: true
+  # Нужен только для Squirrel-установщика; мы собираем NSIS.
+  electron-winstaller: false

@@ -1,0 +1,23 @@
+# Только для локальной разработки: PostgreSQL. Игровые серверы мы не хостим.
+name: kiberdvor
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kiberdvor
+      POSTGRES_PASSWORD: kiberdvor
+      POSTGRES_DB: kiberdvor
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kiberdvor -d kiberdvor']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

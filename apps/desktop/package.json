@@ -1,0 +1,49 @@
+{
+  "name": "desktop",
+  "productName": "Кибердвор",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "description": "Десктоп-клиент Кибердвора: матчи, выбор хоста, сервер CS2 на ПК игрока",
+  "main": "dist/main.cjs",
+  "scripts": {
+    "dev": "node build.mjs --dev",
+    "build": "node build.mjs && vite build",
+    "dist": "pnpm build && electron-builder --win",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@kiberdvor/shared": "workspace:*",
+    "@kiberdvor/ui": "workspace:*",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@kiberdvor/config": "workspace:*",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "build": {
+    "appId": "ru.kiberdvor.desktop",
+    "productName": "Кибердвор",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  }
+}

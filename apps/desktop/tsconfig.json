@@ -1,0 +1,14 @@
+{
+  "extends": "@kiberdvor/config/tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "types": ["node", "vite/client"],
+    // Проверка типов всегда идёт против заглушки: приватная реализация обязана
+    // соответствовать тому же интерфейсу ClientAntiCheat из @kiberdvor/shared.
+    "paths": {
+      "#anticheat": ["./src/main/anticheat-noop.ts"]
+    }
+  },
+  "include": ["src", "vite.config.ts"]
+}

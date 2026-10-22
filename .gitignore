@@ -1,0 +1,42 @@
+# Зависимости
+node_modules/
+.pnpm-store/
+
+# Сборки
+dist/
+build/
+out/
+release/
+dist-electron/
+*.tsbuildinfo
+
+# Окружение и секреты: в репозиторий попадает только .env.example
+.env
+.env.*
+!.env.example
+
+# Логи
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Кэши Vite, Vitest, Electron, ESLint
+.vite/
+.vitest/
+coverage/
+.eslintcache
+.cache/
+.electron-gyp/
+
+# Пользовательские загрузки API (скриншоты FPV)
+uploads/
+
+# IDE и ОС
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
