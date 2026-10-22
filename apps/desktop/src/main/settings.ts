@@ -46,8 +46,16 @@ export const settings = {
     const { gsltEncrypted } = settings.get();
     return gsltEncrypted ? safeStorage.decryptString(Buffer.from(gsltEncrypted, 'base64')) : null;
   },
-  /** Папка сервера CS2 по умолчанию: рядом с данными приложения. */
+  /**
+   * Папка сервера CS2 по умолчанию: рядом с данными приложения. SteamCMD плохо работает
+   * с не-ASCII путями (кириллица в имени приложения или пользователя Windows) — тогда C:\\Kiberdvor.
+   */
   cs2Dir(): string {
-    return settings.get().cs2Dir ?? join(app.getPath('userData'), 'cs2-server');
+    const custom = settings.get().cs2Dir;
+    if (custom) return custom;
+    const nextToApp = join(app.getPath('userData'), 'cs2-server');
+    // eslint-disable-next-line no-control-regex
+    const asciiOnly = /^[\x00-\x7F]*$/.test(nextToApp);
+    return process.platform === 'win32' && !asciiOnly ? 'C:\\Kiberdvor\\cs2-server' : nextToApp;
   },
 };

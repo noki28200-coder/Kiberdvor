@@ -40,3 +40,7 @@ uploads/
 *.swo
 .DS_Store
 Thumbs.db
+
+# Локальные инструкции для Claude: не публикуются
+CLAUDE.md
+docs/claude-windows.md

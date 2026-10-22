@@ -2,6 +2,7 @@
 // Работает только с DEV_AUTH=true и ходит через настоящие маршруты API (все проверки соблюдаются).
 import { noopServerAntiCheat, type MatchView, type TournamentView } from '@kiberdvor/shared';
 import { eq } from 'drizzle-orm';
+import { createHash } from 'node:crypto';
 import { buildApp } from '../app';
 import { createDb } from '../db/client';
 import { tournaments, users } from '../db/schema';
@@ -38,9 +39,30 @@ const PNG = Buffer.concat([Buffer.from('89504e470d0a1a0a', 'hex'), Buffer.from('
   'base64',
 );
 const days = (n: number) => new Date(Date.now() + n * 86400000).toISOString();
-let steamSeq = 900;
 
-const ROLES = { dota2: ['pos1', 'pos2', 'pos3', 'pos4', 'pos5'], fpv: ['pilot', 'scout'] } as const;
+/** Выдуманный, но стабильный SteamID демо-игрока: один и тот же логин — один и тот же SteamID. */
+const fakeSteamId = (login: string) =>
+  `7656119${(
+    BigInt(`0x${createHash('sha256').update(login).digest('hex').slice(0, 12)}`) %
+    10n ** 10n
+  )
+    .toString()
+    .padStart(10, '0')}`;
+
+const ROLES = {
+  dota2: ['pos1', 'pos2', 'pos3', 'pos4', 'pos5'],
+  cs2: ['entry', 'awp', 'support', 'lurker', 'igl'],
+  fpv: ['pilot', 'scout'],
+} as const;
+
+/**
+ * Настоящий SteamID для пользователя artem (SEED_ARTEM_STEAM_ID). Нужен для проверки хоста CS2:
+ * MatchZy пускает на сервер только SteamID из состава, а клиент сверяет запущенный Steam с привязанным.
+ */
+const ARTEM_STEAM_ID = process.env.SEED_ARTEM_STEAM_ID;
+if (ARTEM_STEAM_ID && !/^7656\d{13}$/.test(ARTEM_STEAM_ID)) {
+  throw new Error('SEED_ARTEM_STEAM_ID должен быть SteamID64 (17 цифр, начинается с 7656)');
+}
 const PITCHES = [
   'Держу линию и не тильтую',
   'Играю от карты, много варды',
@@ -49,7 +71,7 @@ const PITCHES = [
   'Ищу постоянную команду на сезон',
 ];
 
-async function player(login: string, game?: 'dota2' | 'fpv', index = 0) {
+async function player(login: string, game?: keyof typeof ROLES, index = 0) {
   const res = await app.inject({ method: 'POST', url: '/api/auth/dev-login', payload: { login } });
   const sid = res.cookies.find((c) => c.name === 'sid')?.value ?? '';
   const call = async <T = Record<string, unknown>>(
@@ -68,9 +90,9 @@ async function player(login: string, game?: 'dota2' | 'fpv', index = 0) {
     return r.json<T>();
   };
   await call('POST', '/me/consent', { acceptPd: true, acceptTerms: true, nickname: login });
-  steamSeq += 1;
+  // Повторный запуск: Steam уже привязан, сервер ответит 409 — это нормально.
   await call('POST', '/auth/dev-steam', {
-    steamId: `7656119800000${String(steamSeq).padStart(4, '0')}`,
+    steamId: login === 'artem' && ARTEM_STEAM_ID ? ARTEM_STEAM_ID : fakeSteamId(login),
   });
   if (game) {
     const roles = ROLES[game];
@@ -178,6 +200,47 @@ if (existing) {
   console.log(
     'Капитаны: dota_cap_1, dota_cap_2, dota_cap_3 — их можно открыть в других браузерах для драфта.',
   );
+}
+
+// 3. CS2: матч ждёт выбора хоста. artem — организатор и капитан команды «Хост»: может сам
+// предложить свой ПК в десктоп-клиенте и подтвердить его (подтверждение организатора достаточно).
+const CS2_TITLE = 'Демо: CS2 на ПК игрока';
+const [cs2Existing] = await database.db
+  .select({ id: tournaments.id })
+  .from(tournaments)
+  .where(eq(tournaments.title, CS2_TITLE));
+if (cs2Existing) {
+  console.log('CS2-демо уже есть, пропускаю.');
+} else {
+  const artem = await player('artem', 'cs2', 4);
+  const cs = await artem.call<{ id: string }>('POST', '/tournaments', {
+    title: CS2_TITLE,
+    game: 'cs2',
+    format: 'single_elimination',
+    teamLimit: 2,
+    registrationClosesAt: days(1),
+    startsAt: days(2),
+  });
+  const rival = await player('cs_cap_rival', 'cs2', 0);
+  for (const [captain, name] of [
+    [artem, 'Хост'],
+    [rival, 'Гости'],
+  ] as const) {
+    await captain.call('POST', `/tournaments/${cs.id}/teams`, { name, missingRoles: [] });
+    const view = await captain.call<TournamentView>('GET', `/tournaments/${cs.id}`);
+    const code = view.teams.find((x) => x.captainId === captain.id)?.inviteCode;
+    for (let i = 1; i < 5; i += 1) {
+      const login = `cs_${name === 'Хост' ? 'host' : 'guest'}_${i}`;
+      await (await player(login, 'cs2', i)).call('POST', '/teams/join', { inviteCode: code });
+    }
+  }
+  await artem.call('POST', `/tournaments/${cs.id}/close-registration`);
+  console.log(`CS2-демо готово: «${CS2_TITLE}», матч ждёт выбора хоста.`);
+  if (!ARTEM_STEAM_ID) {
+    console.log(
+      'Подсказка: задайте SEED_ARTEM_STEAM_ID на чистой базе, чтобы зайти на сервер со своего Steam.',
+    );
+  }
 }
 
 await app.close();

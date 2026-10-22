@@ -1,0 +1,5 @@
+# Везде LF: на Windows git иначе переведёт файлы в CRLF и prettier --check упадёт.
+* text=auto eol=lf
+*.png binary
+*.ico binary
+*.zip binary
