@@ -1,0 +1,58 @@
+* {
+  box-sizing: border-box;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form label.checkbox {
+  flex-direction: row;
+  align-items: center;
+}
+
+input {
+  font: inherit;
+  padding: 8px;
+  border: 1px solid var(--kd-border);
+  border-radius: 8px;
+  background: var(--kd-surface);
+  color: var(--kd-text);
+  flex: 1;
+}
+
+.muted {
+  color: var(--kd-muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.error {
+  color: var(--kd-danger);
+}
+
+.log {
+  max-height: 240px;
+  overflow: auto;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  margin: 0;
+}
