@@ -10,6 +10,9 @@ export default defineConfig({
   dialect: 'postgresql',
   schema: './src/db/schema.ts',
   out: './drizzle',
-  dbCredentials: { url: process.env.DATABASE_URL ?? '' },
+  // Пустая строка в .env = не задано, как в src/env.ts.
+  dbCredentials: {
+    url: process.env.DATABASE_URL || 'postgres://kiberdvor:kiberdvor@localhost:5432/kiberdvor',
+  },
   strict: true,
 });
