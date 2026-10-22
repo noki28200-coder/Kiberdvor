@@ -6,6 +6,7 @@ export default defineConfig({
   root: 'src/renderer',
   base: './',
   plugins: [react()],
-  server: { port: 5174, strictPort: true },
+  // Явно IPv4: на Windows localhost у Node — это ::1, а Electron открывает 127.0.0.1.
+  server: { host: '127.0.0.1', port: 5174, strictPort: true },
   build: { outDir: '../../dist/renderer', emptyOutDir: true },
 });
