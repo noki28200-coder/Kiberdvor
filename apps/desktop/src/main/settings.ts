@@ -38,6 +38,9 @@ export const settings = {
   setGslt(token: string) {
     const value = token.trim();
     if (!value) return settings.update({ gsltEncrypted: null });
+    // Иначе сервер молча не войдёт в Steam и к нему нельзя будет подключиться.
+    if (!/^[0-9A-F]{32}$/i.test(value))
+      throw new Error('GSLT — это 32 символа 0–9 и A–F. Скопируйте только сам токен');
     if (!safeStorage.isEncryptionAvailable())
       throw new Error('Шифрование ОС недоступно: GSLT не сохранён');
     settings.update({ gsltEncrypted: safeStorage.encryptString(value).toString('base64') });
