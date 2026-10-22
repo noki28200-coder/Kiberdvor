@@ -1,10 +1,23 @@
+import { loadServerAntiCheat } from './anticheat';
 import { buildApp } from './app';
 import { createDb } from './db/client';
 import { loadEnv } from './env';
 
 const env = loadEnv();
 const database = createDb(env.DATABASE_URL);
-const app = await buildApp({ webOrigin: env.WEB_ORIGIN, pingDb: database.ping, logger: true });
+await database.migrate();
+const antiCheat = await loadServerAntiCheat();
+
+const { app } = await buildApp({
+  env,
+  db: database.db,
+  pingDb: database.ping,
+  antiCheat,
+  logger: true,
+});
+app.log.info(
+  `Античит: ${antiCheat.provider === 'noop' ? 'заглушка (публичная сборка)' : antiCheat.provider}`,
+);
 
 app.addHook('onClose', async () => {
   await database.close();

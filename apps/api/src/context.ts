@@ -1,3 +1,4 @@
+import type { ServerAntiCheat } from '@kiberdvor/shared';
 import { Socket } from 'node:net';
 import type { Db } from './db/client';
 import type { Env } from './env';
@@ -13,6 +14,8 @@ export interface AppContext {
   steam: SteamWebApi;
   realtime: Realtime;
   notifier: Notifier;
+  /** Проверка отчётов античита: приватная реализация или заглушка (см. anticheat.ts). */
+  antiCheat: ServerAntiCheat;
   now: () => Date;
   /** Проверка, что порт кандидата в хосты доступен из интернета (серый IP → false). */
   checkPort: (ip: string, port: number) => Promise<boolean>;
