@@ -35,7 +35,9 @@ const common = {
   platform: 'node',
   target: 'node22',
   format: 'cjs',
-  external: ['electron'],
+  // nat-upnp тянет xml2js 0.1, который падает в strict mode, а бандл esbuild целиком "use strict".
+  // Поэтому он грузится из node_modules как есть (он в dependencies, electron-builder его упакует).
+  external: ['electron', 'nat-upnp'],
   sourcemap: dev,
   minify: !dev,
   plugins: [antiCheatPlugin],
