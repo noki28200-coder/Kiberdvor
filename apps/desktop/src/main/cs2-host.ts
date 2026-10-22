@@ -154,6 +154,8 @@ export async function launchServer({ root, configUrl, serverPassword, gslt, log 
   const args = [
     '-dedicated',
     '-console',
+    // Консоль сервера пишется в файл (с Metamod — game/csgo/addons/metamod/console.log).
+    '-condebug',
     '-port',
     String(GAME_PORT),
     '+map',
@@ -168,7 +170,8 @@ export async function launchServer({ root, configUrl, serverPassword, gslt, log 
     'kiberdvor_match.cfg',
   ];
   log('Запускаю сервер CS2…');
-  serverProcess = spawn(exe, args, { cwd: serverDir, windowsHide: false });
+  // Вывод не в pipe: непрочитанный pipe переполняется, и сервер зависает на записи в консоль.
+  serverProcess = spawn(exe, args, { cwd: serverDir, windowsHide: false, stdio: 'ignore' });
   serverProcess.once('exit', (code) => {
     log(`Сервер CS2 остановлен (код ${code ?? 0})`);
     serverProcess = null;
