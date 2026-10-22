@@ -362,6 +362,22 @@ importers:
         specifier: ^8.72.0
         version: 8.72.0(eslint@10.13.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
 
+  packages/private:
+    dependencies:
+      '@kiberdvor/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@kiberdvor/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.19.2
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+
   packages/shared:
     dependencies:
       zod:

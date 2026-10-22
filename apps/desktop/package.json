@@ -3,7 +3,7 @@
   "productName": "Кибердвор",
   "version": "0.0.0",
   "private": true,
-  "license": "AGPL-3.0-only",
+  "license": "GPL-3.0-only",
   "description": "Десктоп-клиент Кибердвора: матчи, выбор хоста, сервер CS2 на ПК игрока",
   "main": "dist/main.cjs",
   "scripts": {

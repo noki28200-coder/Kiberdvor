@@ -1,0 +1,3 @@
+[submodule "packages/private"]
+	path = packages/private
+	url = git@github.com:noki28200-coder/Kiberdvor-antichit-privat.git
