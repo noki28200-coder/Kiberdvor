@@ -288,14 +288,17 @@ function MatchCard({ match, info }: { match: ActiveMatch; info: AppInfo }) {
             </Button>
           </>
         )}
-        {needsHost && match.isHost && match.status === 'ready_check' && (
-          <Button
-            disabled={busy || !info.hostSupported}
-            onClick={() => void run(() => bridge.launchServer(match.id))}
-          >
-            Запустить сервер CS2
-          </Button>
-        )}
+        {/* В live — перезапуск, если сервер упал или завис: API выдаёт новый токен матча. */}
+        {needsHost &&
+          match.isHost &&
+          (match.status === 'ready_check' || match.status === 'live') && (
+            <Button
+              disabled={busy || !info.hostSupported}
+              onClick={() => void run(() => bridge.launchServer(match.id))}
+            >
+              {match.status === 'live' ? 'Перезапустить сервер CS2' : 'Запустить сервер CS2'}
+            </Button>
+          )}
       </div>
       {match.game === 'fpv' && <FpvTools match={match} />}
       {message && <p className="muted">{message}</p>}
